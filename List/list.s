@@ -5,6 +5,7 @@
 
     .global List_push
     .global List_erase
+    .global List_replace
     .global List_print
     .global List_clear
     .text
@@ -63,7 +64,7 @@ List_push:
 // X0 - index to erase
 List_erase:
     STR LR,[SP,#-16]!   // PUSH return address
-    MOV X3,X0           // move target index to X2
+    MOV X3,X0           // move target index to X3
     MOV X2,#0           // set current index to 0
     LDR X0,=headPtr     // load address to head node
     LDR X0,[X0]         // load head node
@@ -129,7 +130,11 @@ erase_end:
 // X1 - data address to replace it with
 List_replace:
     STR LR,[SP,#-16]!   // PUSH return address
-    MOV X3,X0           // move target index to X2
+    
+    STP X0,X1,[SP,#-16]!
+    LDP X0,X1,[SP],#16
+
+    MOV X3,X0           // move target index to X3
     MOV X2,#0           // set current index to 0
     LDR X0,=headPtr     // load head address
     LDR X0,[X0]         // load head node
@@ -147,15 +152,26 @@ replace_find:
     B   replace_find    // keep searching for correct index
 
 replace_node:
-    STP X0,X1,[SP,#-16]!    // PUSH node to modify and new data
+    // at this point, X0 = current node, X1 = data to replace with
+    STP X0,X1,[SP,#-16]!    // PUSH current node and new data
     LDR X0,[X0]             // load data at current node
     BL  free                // free current node's data
-    LDP X1,X2,[SP],#16      // POP node to modify and new data
-    LDR X0,[X1]             // load old data to free
-    STR X2,[X1]             // store new data
-    BL  free                // free old data
+    LDP X0,X1,[SP],#16      // POP curren node and new data
+    STR X1,[X0]             // store new data into current node
+
 
 replace_end:    
+    LDR LR,[SP],#16     // POP return address
+    RET                 // return to calling function
+
+
+/******************************************************************************/
+// String search. Regardless of case, return all strings that match the substring given.
+// Search
+List_search:
+    STR LR,[SP,#-16]!   // PUSH return address
+
+find_end:
     LDR LR,[SP],#16     // POP return address
     RET                 // return to calling function
 
