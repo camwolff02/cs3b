@@ -1,0 +1,2 @@
+as -o Lab1.o Lab1.s
+ld -o Lab1 Lab1.o
