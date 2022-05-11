@@ -21,8 +21,15 @@ _start:
     // X0 now contains new string
     BL List_push        // insert the copied string into the linked list
 .endr
-    MOV X0,#2           // load index of string to delete 
+
+    MOV X0,#1           // load index of string to delete 
     BL List_erase       // erase string at index 3
+
+    LDR X0,=str3            // load address of string
+    BL String_toUpperCase   // convert string to uppercase
+    MOV X1,X0               // move string to replace with into X1
+    MOV X0,#1               // index to replace
+    BL String_replace       // replace old string with new string
 
     BL List_print       // print list
     BL List_clear       // clear list

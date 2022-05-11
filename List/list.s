@@ -77,7 +77,7 @@ erase_find:
     // else, increment to next node
     ADD X2,X2,#1        // increment index
     ADD X0,X0,#8        // move to &next
-    MOV X1,X0           // save previous node pointer (&next, don't need &data)   BAD BAD BAD
+    MOV X1,X0           // save previous node pointer (&next, don't need &data)   
     LDR X0,[X0]         // load next node pointer
     B   erase_find      // keep searching for correct index
 
@@ -116,6 +116,46 @@ erase_free:
     STR X1,[X0]         // store new size
 
 erase_end:    
+    LDR LR,[SP],#16     // POP return address
+    RET                 // return to calling function
+
+
+
+/******************************************************************************/
+// replace an element in the list
+//
+// input:
+// X0 - index to replace
+// X1 - data address to replace it with
+List_replace:
+    STR LR,[SP,#-16]!   // PUSH return address
+    MOV X3,X0           // move target index to X2
+    MOV X2,#0           // set current index to 0
+    LDR X0,=headPtr     // load head address
+    LDR X0,[X0]         // load head node
+
+replace_find:
+    CMP  X0,#0          // if current pointer is a nullptr
+    B.EQ replace_end    // nothing to replace
+    CMP  X2,X3          // if current index == target index to erase
+    B.EQ replace_node   // replace current node
+
+    // else, increment to next node
+    ADD X2,X2,#1        // increment index
+    ADD X0,X0,#8        // move to &next
+    LDR X0,[X0]         // load next node pointer
+    B   replace_find    // keep searching for correct index
+
+replace_node:
+    STP X0,X1,[SP,#-16]!    // PUSH node to modify and new data
+    LDR X0,[X0]             // load data at current node
+    BL  free                // free current node's data
+    LDP X1,X2,[SP],#16      // POP node to modify and new data
+    LDR X0,[X1]             // load old data to free
+    STR X2,[X1]             // store new data
+    BL  free                // free old data
+
+replace_end:    
     LDR LR,[SP],#16     // POP return address
     RET                 // return to calling function
 
