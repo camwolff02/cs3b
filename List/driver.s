@@ -14,7 +14,7 @@ str5:       .asciz "The sun did not shine.\n"
     .global _start
     .text
 _start:
-
+// fill list
 .irpc num, 12345
     LDR  X0,=str\num    // load string to copy
     BL   String_copy    // call function to copy string

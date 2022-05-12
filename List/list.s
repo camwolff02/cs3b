@@ -1,4 +1,4 @@
-
+// Structure of node in linked list:
 // -------------------------------
 // | &data (quad) | &next (quad) |
 // -------------------------------
@@ -6,6 +6,8 @@
     .global List_push
     .global List_erase
     .global List_replace
+    .global List_size
+    .global List_empty
     .global List_print
     .global List_clear
     .text
@@ -165,6 +167,7 @@ replace_end:
     RET                 // return to calling function
 
 
+
 /******************************************************************************/
 // String search. Regardless of case, return all strings that match the substring given.
 // Search
@@ -173,6 +176,29 @@ List_search:
 
 find_end:
     LDR LR,[SP],#16     // POP return address
+    RET                 // return to calling function
+
+/******************************************************************************/
+// return the current size of the list
+List_size:
+    LDR X0,=iSize       // load pointer to size
+    LDR X0,[X0]         // load size value
+    RET                 // return size
+
+
+
+/******************************************************************************/
+// return 1 if the list is empty, and 0 otherwise
+List_empty:
+    LDR X0,=headPtr     // load address of head
+    LDR X0,[X0]         // load head node
+    CMP X0,#0           // if the head is a nullptr
+    B.EQ empty_true     // the list is empty
+    // else, the list is not empty
+    MOV X0,#0           // return 0, false, list is not empty
+    RET                 // return to calling function
+empty_true:
+    MOV X0,#1           // return 1, true, list is empty
     RET                 // return to calling function
 
 
@@ -220,13 +246,14 @@ free_loop:
     BL  free                // free current string
     LDR X0,[SP],#16         // POP next node ptr
     B   free_loop           // continue looping and freeing
+
 end_free_loop:
     // reset member variables
-    LDR X1,#0               // load 0 for resetting
+    MOV X1,#0               // load 0 for resetting
     LDR X0,=headPtr         // load head
     STR X1,[X0]             // reset head
     LDR X0,=tailPtr         // load tail
-    STR X1,[X0]             // reset tail 
+    STR X1,[X0]             // reset tail
     LDR X0,=iSize           // load size
     STR X1,[X0]             // reset size
     LDR LR,[SP],#16         // POP link register
