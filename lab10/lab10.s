@@ -46,7 +46,7 @@ _start:
     MOV X12,#0     // X12 is our LCV, initialize to 0   
 
     print_loop:  // for x in iArr
-        LDR W0,[X11],#4 // load iArr[i] to W0 (4 bytes) and increment to next
+        LDR W0,[X11],#1 // load iArr[i] to W0 (4 bytes) and increment to next
         LDR X1,=szNum   // load string to store converted number 
         BL int64asc     // call function to convert int to ascii
         LDR X0,=szNum   // load string number for output

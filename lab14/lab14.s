@@ -32,7 +32,7 @@ _start:
 
     // write to file
     MOV X8,#64          // Write
-    LDR X1,=szMsg1      // file name
+    LDR X1,=szMsg1      // address of string to write
     MOV X2,#15          // length of string to write
     SVC 0               // service call
 
